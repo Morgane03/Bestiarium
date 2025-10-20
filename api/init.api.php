@@ -14,69 +14,75 @@ if (!empty($_GET['action'])) {
     case 'user':
       switch ($url[1]) {
         case 'register':
-          if($method == 'POST'){
+          if ($method == 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
 
-            if(!$input || !isset($input['pseudo'], $input['password'],$input['email'])){
+            if (!$input || !isset($input['pseudo'], $input['password'], $input['email'])) {
               http_response_code(400);
               echo json_encode(['error' => 'Champs manquants : pseudo, email, password']);
               exit;
             }
-              $pseudo = htmlspecialchars($input['pseudo']);
-              $email = filter_var($input['email'], FILTER_VALIDATE_EMAIL);
+            $pseudo = htmlspecialchars($input['pseudo']);
+            $email = filter_var($input['email'], FILTER_VALIDATE_EMAIL);
 
-              $response = $userController->addUser($pseudo, $email, $input['password']);
-              echo json_encode($response);
-          }
-          else{
+            $response = $userController->addUser($pseudo, $email, $input['password']);
+            echo json_encode($response);
+          } else {
             echo json_encode(['error' => 'Vous devez utiliser la methode POST']);
           }
           break;
-          case 'login':
-            if ($method === 'POST') {
-              // Récupère les données JSON envoyées dans le corps de la requête
-              $input = json_decode(file_get_contents('php://input'), true);
+        case 'login':
+          if ($method === 'POST') {
+            // Récupère les données JSON envoyées dans le corps de la requête
+            $input = json_decode(file_get_contents('php://input'), true);
 
-              // Vérifie que les champs nécessaires sont bien fournis
-              if(!$input || !isset($input['pseudo']) || !isset($input['password'])) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Champs manquants : pseudo, mot de passe ou mot de passe incorrect']);
-                exit;
-              }
-
-
+            // Vérifie que les champs nécessaires sont bien fournis
+            if (!$input || !isset($input['pseudo']) || !isset($input['password'])) {
+              http_response_code(400);
+              echo json_encode(['error' => 'Champs manquants : pseudo, mot de passe ou mot de passe incorrect']);
+              exit;
             }
-            break;
-            case 'logout':
-              if($method === 'POST') {
 
-              }
-              break;
+            $response = $userController->loginUser($input['pseudo'], $input['password']);
+            echo json_encode($response);
+          }
+          break;
+        case 'logout':
+          if ($method === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            $response = $userController->logoutUser();
+            echo json_encode($response);
+          } else {
+            echo json_encode(['error' => 'Vous devez utiliser la méthode POST']);
+          }
       }
       break;
     case 'creature':
       switch ($url[1]) {
         case 'add':
-          if($method == 'POST'){
+          if ($method === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
 
-            if(!$input || !isset($input['heads'], $input['type'])){
+            if (!$input || !isset($input['heads'], $input['type'], $input['user_id'])) {
               http_response_code(400);
-              echo json_encode(['error' => 'Champs manquants : Nombre de têtes, type']);
+              echo json_encode(['error' => 'Champs manquants : heads, type, user_id']);
               exit;
             }
-            $heads = htmlspecialchars($input['heads']);
-            $type = filter_var($input['type'], FILTER_VALIDATE_EMAIL);
 
-            $response = $monsterController->addCreature(['heads' => $input['heads'],'type'=>$input['type']]);
+            $response = $monsterController->addCreature(['heads' => $input['heads'], 'type' => $input['type'], 'user_id' => $input['user_id']]);
             echo json_encode($response);
-          }
-          else{
+          } else {
             echo json_encode(['error' => 'Vous devez utiliser la methode POST']);
           }
           break;
+        case 'createHybrid':
+          break;
+        case 'showinfo':
+          break;
+        case'showAllMyMonsters':
+          break;
       }
       break;
-
   }
 }

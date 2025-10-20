@@ -38,12 +38,24 @@ switch ($url[0] ?? 'home') {
     break;
   case 'login':
     $userController->loginUser($_POST['pseudo'], $_POST['password']);
+    $response = APIController::requestApi('user/login', $_POST);
+
+//    if ($response['success']) {
+//
+//    } else {
+//      // En cas d'échec de la connexion, afficher la page de login
+//      renderPage('login');
+//    }
     break;
   case 'showRegister':
     renderPage('register');
     break;
   case 'logout':
-    $userController->logoutUser();
+    //$userController->logoutUser();
+    $response = APIController::requestApi('user/logout', $_POST);
+    if($response['success']){
+      renderPage('login');
+    }
     break;
   case 'showCreatures': // Nouvelle action pour afficher les créatures
 
@@ -54,18 +66,7 @@ switch ($url[0] ?? 'home') {
     case 'addCreature':
       //$monsterController->addCreature($_POST);
       $response = ApiController::requestApi('creature/add', $_POST);
-      var_dump($response);
-      die();
       break;
-//  case 'creature':
-//    switch ($url[1]) {
-//      case 'add':
-//        $monsterController->addCreature($_POST);
-//        break;
-//      default:
-//        break;
-//    }
-
   case 'showUserPage':
     if (session_status() === PHP_SESSION_NONE) {
       session_start();
