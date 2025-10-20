@@ -1,0 +1,53 @@
+openapi: 3.0.0
+info:
+  title: API Bestinarium
+  description: Documentation de l'API
+  version: 1.0.0
+servers:
+  - url: http://bestinarium/api
+paths:
+  /user/register:
+    post:
+      summary: Créer un nouvel utilisateur
+      description: Inscrit un nouvel utilisateur dans la base de données.
+      tags:
+        - Utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pseudo
+                - email
+                - password
+              properties:
+                pseudo:
+                  type: string
+                  example: "Jean123"
+                  description: Nom d'utilisateur unique
+                email:
+                  type: string
+                  example: "jean@example.com"
+                  description: Adresse email valide
+                password:
+                  type: string
+                  example: "MotDePasseSecret"
+                  description: Mot de passe sécurisé
+      responses:
+        '200':
+          description: Succès de l'inscription
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Utilisateur créé avec succès"
+        '400':
+          description: Erreur de validation

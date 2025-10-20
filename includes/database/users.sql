@@ -1,0 +1,15 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE creature(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    habitat TEXT NOT NULL,
+    diet TEXT NOT NULL,
+    image_url TEXT
+);

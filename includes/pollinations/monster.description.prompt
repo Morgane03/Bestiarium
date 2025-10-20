@@ -1,0 +1,11 @@
+{
+  "nom": "",
+  "description": "",
+  "type": {{type}},
+  "tete": {{heads}},
+  "score": {
+    "attaque": ,
+    "defense": ,
+    "sante": 
+  }
+} renvoi moi ce json rempli pour une créature de type {{type}} et possedant {{heads}} têtes distinctes.  N'ajoute aucun texte.

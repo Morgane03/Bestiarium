@@ -1,0 +1,11 @@
+{
+  "nom": "",
+  "description": "",
+  "type": "" ,
+  "tete": ,
+  "score": {
+    "attaque": ,
+    "defense": ,
+    "sante": 
+  }
+} renvoi moi ce json rempli pour une créature hybride dont le premier parent à la description {{descriptionP1}} et le second {{descriptionP2}}.  N'ajoute aucun texte.
