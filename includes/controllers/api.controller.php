@@ -21,7 +21,10 @@ class ApiController
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
     if (!empty($datas)) {
-      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($datas));
+      $json = json_encode($datas);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+      // Ensure the Content-Type header is set so the API can parse JSON input
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
     }
 
     // Exécuter la requête

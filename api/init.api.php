@@ -1,15 +1,16 @@
 <?php
 require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\controllers\api.user.controller.php';
 require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\controllers\api.monster.controller.php';
+require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\controllers\api.match.controller.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $userController = new APIUserController();
 $monsterController = new ApiMonsterController();
+$matchController = new ApiMatchController();
 
 if (!empty($_GET['action'])) {
   // Nettoie et découpe l'action en segments
   $url = explode('/', filter_var($_GET['action'], FILTER_SANITIZE_URL));
-
   switch ($url[0]) {
     case 'user':
       switch ($url[1]) {
@@ -81,6 +82,37 @@ if (!empty($_GET['action'])) {
         case 'showinfo':
           break;
         case'showAllMyMonsters':
+          break;
+      }
+      break;
+    case 'battle':
+      switch ($url[1]) {
+        case 'add':
+          if ($method === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            if (!$input || !isset($input['creature1'], $input['creature2'])) {
+              http_response_code(400);
+              echo json_encode(['error' => 'Champs manquants : creature1, creature2s']);
+              exit;
+            }
+
+            $response = $matchController->addMatch([
+                'creature1' => [
+                  'id'            => $input['creature1']['id'],
+                ],
+                'creature2' => [
+                  'id'            => $input['creature2']['id'],
+                ]
+              ]
+            );
+            var_dump($response);
+          } else {
+            echo json_encode(['error' => 'Méthode HTTP incorrecte. Utilisez POST.']);
+          }
+          break;
+        case
+        'result':
           break;
       }
       break;

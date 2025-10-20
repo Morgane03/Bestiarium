@@ -1,6 +1,7 @@
 <?php
 class MatchController
 {
+
     private $pdo;
 
     public function __construct()
@@ -35,6 +36,9 @@ class MatchController
     {
         try {
             $monsterController = new MonsterController();
+
+            var_dump($datas);
+            die();
 
             $creature1 = $monsterController->getCreature($datas['creature1']);
             $creature2 = $monsterController->getCreature($datas['creature2']);

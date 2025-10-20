@@ -64,8 +64,19 @@ switch ($url[0] ?? 'home') {
     renderPage('addCreature');
     break;
     case 'addCreature':
-      //$monsterController->addCreature($_POST);
-      $response = ApiController::requestApi('creature/add', $_POST);
+      // Ensure session is started so we can attach the current user's id to the API request
+      if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+      }
+
+      $data = $_POST ?? [];
+      if (isset($_SESSION['user_id'])) {
+        $data['user_id'] = $_SESSION['user_id'];
+      }
+
+      $response = ApiController::requestApi('creature/add', $data);
+      var_dump($response);
+      die();
       break;
   case 'showUserPage':
     if (session_status() === PHP_SESSION_NONE) {
@@ -97,7 +108,10 @@ switch ($url[0] ?? 'home') {
 
     break;
   case 'battle':
-    $matchController->addMatch($_POST);
+    //$matchController->addMatch($_POST);
+    $response = ApiController::requestApi('battle/add', $_POST);
+    var_dump($_POST); // This will help you verify what data is being sent
+    die();
     break;
   case 'showResult':
     break;
