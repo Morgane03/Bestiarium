@@ -83,4 +83,20 @@ class ApiMatchController
 
     return $this->pdo->lastInsertId();
   }
+
+  public function showAllMatches () : array
+  {
+    try {
+      // Récupération des créatures
+      $sql = "SELECT * FROM battle";
+      $stmt = $this->pdo->prepare($sql);
+      $stmt->execute();
+
+      return $stmt->fetchAll(PDO::FETCH_ASSOC); // Retourne toutes les créatures sous forme de tableau
+    } catch (PDOException $e) {
+      echo "Erreur de connexion à la base de données : " . $e->getMessage();
+
+      return []; // Retourne un tableau vide en cas d'erreur
+    }
+  }
 }

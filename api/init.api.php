@@ -130,7 +130,15 @@ if (!empty($_GET['action'])) {
             echo json_encode(['error' => 'Méthode HTTP incorrecte. Utilisez POST.']);
           }
           break;
-        case 'result':
+        case 'results':
+          if($method === 'GET'){
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            $response = $matchController->showAllMatches();
+            echo json_encode($response);
+          }else {
+            echo json_encode(['error' => 'Méthode HTTP incorrecte. Utilisez GET.']);
+          }
           break;
       }
       break;
