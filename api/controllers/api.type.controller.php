@@ -10,10 +10,13 @@ class APITypeController
     $connector = new Db_connector();
     $this->db = $connector->GetDbConnection();
   }
-    
+
   /**
-   * Summary of getTypeId
-   * @param mixed $type
+   * Retrieves the ID of a given type from the database.
+   * If the type exists, it returns the ID; otherwise, returns false.
+   *
+   * @param mixed $type The name of the type to look for.
+   * @return mixed The ID of the type, or false if not found.
    */
   public function getTypeId ($type)
   {
@@ -31,7 +34,7 @@ class APITypeController
   }
 
   /**
-   * Summary of createType
+   * Creates a new type in the database.
    * @param mixed $type
    * @return bool|string
    */
@@ -49,16 +52,17 @@ class APITypeController
   }
 
   /**
-   * Summary of getOrCreateTypeId
-   * @param mixed $type
-   * @return mixed
+   * Retrieves the ID of a type, or creates it if it doesn't exist.
+   *
+   * @param mixed $type The name of the type.
+   * @return mixed The ID of the type, whether it was retrieved or created.
    */
   public function getOrCreateTypeId ($type)
   {
-    // On tente de récupérer le type
+    // Attempt to retrieve the type ID
     $typeId = $this->getTypeId($type);
 
-    // Si le type n'existe pas, on le crée et retourne son ID
+    // If the type doesn't exist, create it and return the new ID
     if (!$typeId) {
       $typeId = $this->createType($type);
     }
