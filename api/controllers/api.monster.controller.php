@@ -67,7 +67,19 @@ class ApiMonsterController
       $image = $this->getImage($creatureID, $infoCreature->description);
       $this->updateImage($creatureID, $image);
 
-      return ['success' => true, 'message' => 'Creature ajoutée avec succes'];
+      return ['success'        => true,
+              'message'        => 'Creature ajoutée avec succes',
+              'creature_id'    => $creatureID,
+              'name'           => $infoCreature->nom,
+              'image'          => $image,
+              'description'    => $infoCreature->description,
+              'heads'          => $datas['heads'],
+              'type'           => $infoCreature->type,
+              ':health_score'  => $infoCreature->score->sante,
+              ':attack_score'  => $infoCreature->score->attaque,
+              ':defense_score' => $infoCreature->score->defense,
+              'user_id'        => $user_id,
+      ];
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Erreur lors de l\'ajout de la créature :' . $e->getMessage()];
     }
