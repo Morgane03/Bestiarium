@@ -35,7 +35,6 @@ class ApiMatchController
 
   function addMatch (array $datas = []) : array
   {
-
     try {
       $monsterController = new ApiMonsterController();
 

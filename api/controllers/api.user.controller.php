@@ -26,7 +26,11 @@ class APIUserController
       $stmt->bindParam(':password', $hashedPassword);
       $stmt->execute();
 
-      return ['success' => true, 'message' => 'Utilisateur ajouté avec succès.'];
+      return ['success'  => true,
+              'message'  => 'Utilisateur ajouté avec succès.',
+              'pseudo'   => $pseudo,
+              'email'    => $email,
+              'password' => $hashedPassword];
     } catch (PDOException $e) {
       // Pour le développement, sinon en prod, log l'erreur proprement
       return ['success' => false, 'message' => 'Erreur lors de l\'ajout de l\'utilisateur.'];
@@ -52,7 +56,9 @@ class APIUserController
         $monsterController = new ApiMonsterController();
         $creatures = $monsterController->getCreatures($_SESSION['user_id']);
 
-        return ['success' => true, 'message' => 'Utilisateur connecté avec succès.',  'user_id' => 'Voitre user_id :' . $user['id']];
+        return ['success' => true,
+                'message' => 'Utilisateur connecté avec succès.',
+                'user_id' => 'Votre user_id :' . $user['id']];
       }
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Erreur lors de la connexion de l\'utilisateur.'];

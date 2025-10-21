@@ -36,7 +36,6 @@ class ApiHybridController extends ApiMonsterController
         $creatures = $this->getCreatures($datas['user_id']);
         $creature = $this->getCreature($creatureID);
 
-        //renderPage( 'user', ['creatures' => $creatures]);
         return ['success'       => true,
                 'message'       => 'Hybride ajoutée avec succes',
                 'creature_id'   => $creatureID,

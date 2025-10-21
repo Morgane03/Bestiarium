@@ -78,7 +78,6 @@ class ApiMonsterController
               'health_score'  => $infoCreature->score->sante,
               'attack_score'  => $infoCreature->score->attaque,
               'defense_score' => $infoCreature->score->defense,
-              'is_fusion'     => $infoCreature->is_fusion,
               'user_id'       => $user_id,
       ];
     } catch (PDOException $e) {

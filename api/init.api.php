@@ -87,8 +87,24 @@ if (!empty($_GET['action'])) {
           }
           break;
         case 'showinfo':
+          if($method === 'GET'){
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            $response = $monsterController->getCreature($input['creature_id']);
+            echo json_encode($response);
+          }else{
+            echo json_encode(['error' => 'Vous devez utiliser la methode GET']);
+          }
           break;
         case'showAllMyMonsters':
+          if($method === 'GET'){
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            $response = $monsterController->getCreatures($input['user_id']);
+            echo json_encode($response);
+          }else{
+            echo json_encode(['error' => 'Vous devez utiliser la methode GET']);
+          }
           break;
       }
       break;
@@ -100,13 +116,13 @@ if (!empty($_GET['action'])) {
 
             if (!$input || !isset($input['creature1'], $input['creature2'])) {
               http_response_code(400);
-              echo json_encode(['error' => 'Champs manquants : creature1, creature2s']);
+              echo json_encode(['error' => 'Champs manquants : creature1, creature2']);
               exit;
             }
 
             $response = $matchController->addMatch([
-                'creature1' => ['id'=> $input['creature1']['id'],],
-                'creature2' => ['id'=> $input['creature2']['id'],]]
+                'creature1' => ['id'=> $input['creature1']['id']],
+                'creature2' => ['id'=> $input['creature2']['id']]]
             );
 
             echo json_encode($response);
