@@ -1,6 +1,6 @@
 <?php
 require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\database\Db.connector.php';
-class APIUserController
+class APITypeController
 {
     private $db;
 
@@ -14,17 +14,17 @@ class APIUserController
   {
     try {
       // Recherche du type dans la base de données
-      $stmt = $this->pdo->prepare("SELECT * FROM type WHERE name = :name");
+      $stmt = $this->db->prepare("SELECT * FROM type WHERE name = :name");
       $stmt->bindParam(':name', $type);
       $stmt->execute();
       $typeBdd = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if (empty($typeBdd)) {
         // Si le type n'existe pas, on l'ajoute
-        $stmt = $this->pdo->prepare("INSERT INTO type (name) VALUES (:name)");
+        $stmt = $this->db->prepare("INSERT INTO type (name) VALUES (:name)");
         $stmt->bindParam(':name', $type);
         $stmt->execute();
-        return $this->pdo->lastInsertId(); // Retourne l'ID du nouveau type
+        return $this->db->lastInsertId(); // Retourne l'ID du nouveau type
       } else {
         // Si le type existe déjà, on retourne son ID
         return $typeBdd['id'];
@@ -37,7 +37,7 @@ class APIUserController
   public function getType(int $typeId){
     try {
       // Recherche du type dans la base de données
-      $stmt = $this->pdo->prepare("SELECT * FROM type WHERE id = :id");
+      $stmt = $this->db->prepare("SELECT * FROM type WHERE id = :id");
       $stmt->bindParam(':id', $typeId);
       $stmt->execute();
       return $stmt->fetch(PDO::FETCH_ASSOC);

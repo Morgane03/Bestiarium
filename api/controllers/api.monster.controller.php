@@ -1,4 +1,6 @@
 <?php
+require_once('../includes/pollinations/Pollinations.class.php');
+require_once('../api/controllers/api.type.controller.php');
 
 class ApiMonsterController
 {
@@ -41,14 +43,26 @@ class ApiMonsterController
   function addCreature (array $datas = []) : array
   {
     try {
+      // Vérification si la session est bien démarrée
+      if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+      }
+
+      // Determine user id: prefer provided data (from client) otherwise use session
+      $user_id = $datas['user_id'] ?? $_SESSION['user_id'] ?? null;
+
+      if (is_null($user_id)) {
+        return ['success' => false, 'message' => 'Utilisateur non connecté'];
+      }
+
       $infoCreature = $this->getInfoCreature($datas);
 
-      $typeController = new TypeController();
+      $typeController = new APITypeController();
 
       // Récupération ou création de l'ID du type
       $type_id = $typeController->getOrCreateTypeId($infoCreature->type);
 
-      $creatureID = $this->add($infoCreature, $type_id, $datas['heads'] ?? 1);
+      $creatureID = $this->add($infoCreature, $type_id, $datas['heads'] ?? 1, $user_id);
 
       $image = $this->getImage($creatureID, $infoCreature->description);
       $this->updateImage($creatureID, $image);
@@ -71,10 +85,11 @@ class ApiMonsterController
 
   protected function getImage (int $creature_id, string $description = "") : string
   {
-    $destination = 'C:\wamp64\www\bestiarium\includes\images\creatures\\' . $creature_id . '.jpg';
+    $destination = 'C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\images\creatures\\' . $creature_id . '.jpg';
     $image = Pollinations::requestIA($description, false);
     //$image = file_get_contents(Pollinations::requestIA($description, false));
     file_put_contents($destination, $image);
+
 
     return 'includes\images\creatures\\' . $creature_id . '.jpg';
   }

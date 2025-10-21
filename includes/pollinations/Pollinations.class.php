@@ -9,7 +9,6 @@ class Pollinations
 
     public static function requestIA(string $prompt, bool $text = true)
     {
-        
         $url = self::$urlImage;
 
         if ($text) {

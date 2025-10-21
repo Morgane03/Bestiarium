@@ -65,12 +65,6 @@ if (!empty($_GET['action'])) {
           if ($method === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
 
-            if (!$input || !isset($input['heads'], $input['type'], $input['user_id'])) {
-              http_response_code(400);
-              echo json_encode(['error' => 'Champs manquants : heads, type, user_id']);
-              exit;
-            }
-
             $response = $monsterController->addCreature(['heads' => $input['heads'], 'type' => $input['type'], 'user_id' => $input['user_id']]);
             echo json_encode($response);
           } else {
@@ -98,21 +92,16 @@ if (!empty($_GET['action'])) {
             }
 
             $response = $matchController->addMatch([
-                'creature1' => [
-                  'id'            => $input['creature1']['id'],
-                ],
-                'creature2' => [
-                  'id'            => $input['creature2']['id'],
-                ]
-              ]
+                'creature1' => ['id'=> $input['creature1']['id'],],
+                'creature2' => ['id'=> $input['creature2']['id'],]]
             );
-            var_dump($response);
+
+            echo json_encode($response);
           } else {
             echo json_encode(['error' => 'Méthode HTTP incorrecte. Utilisez POST.']);
           }
           break;
-        case
-        'result':
+        case 'result':
           break;
       }
       break;
