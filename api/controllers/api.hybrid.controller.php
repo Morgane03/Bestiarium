@@ -9,30 +9,37 @@ class ApiHybridController extends ApiMonsterController
     parent::__construct();
   }
 
+  /**
+   * addHybrid creates a hybrid creature by combining two existing creatures.
+   * @param array $datas
+   * @return array{attack_score: mixed, creature_id: mixed, defense_score: mixed, description: mixed, heads: mixed, health_score: mixed, image: mixed, is_fusion: mixed, message: string, name: mixed, success: bool, type: mixed, user_id: mixed|array{message: string, success: bool}}
+   */
   function addHybrid (array $datas = [])
   {
     try {
-      //$monsterController = new MonsterController();
+
       $creature1 = $this->getCreature($datas['creature1']);
       $creature2 = $this->getCreature($datas['creature2']);
 
       if ($creature1 && $creature2) {
-        // Logique pour créer l'hybride
+        // Logic to create the hybrid creature
         $infoCreature = $this->getInfoHybrid($creature1['description'], $creature2['description']);
 
         $typeController = new APITypeController();
 
-        // Récupération ou création de l'ID du type
+        // Get or create the type ID
         $type_id = $typeController->getOrCreateTypeId($infoCreature->type);
 
         $creatureID = $this->add($infoCreature, $type_id, (int)$infoCreature->tete, true);
         $this->updateHybrid($creatureID);
 
+        // Retrieve and update the image of the hybrid creature
         $image = $this->getImage($creatureID, $infoCreature->description);
         $this->updateImage($creatureID, $image);
 
         $this->addSql($creature1['id'], $creature2['id'], $creatureID);
 
+        // Get the user's creatures and the newly created hybrid creature
         $creatures = $this->getCreatures($datas['user_id']);
         $creature = $this->getCreature($creatureID);
 
@@ -56,6 +63,11 @@ class ApiHybridController extends ApiMonsterController
     }
   }
 
+  /**
+   * getInfoHybrid generates the hybrid creature's information based on the descriptions of the parent creatures.
+   * @param string $descriptionP1
+   * @param string $descriptionP2
+   */
   private function getInfoHybrid (string $descriptionP1, string $descriptionP2)
   {
     $prompt = file_get_contents('C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\pollinations\monster.hybrid.prompt');
@@ -66,6 +78,13 @@ class ApiHybridController extends ApiMonsterController
     return Pollinations::requestIA($prompt);
   }
 
+  /**
+   * addSql adds the relationship between the parent creatures and the hybrid to the database.
+   * @param int $creature1
+   * @param int $creature2
+   * @param int $hybridId
+   * @return void
+   */
   private function addSql (int $creature1, int $creature2, int $hybridId)
   {
     try {
