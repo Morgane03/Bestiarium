@@ -1,48 +1,68 @@
 <?php
 require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\database\Db.connector.php';
+
 class APITypeController
 {
-    private $db;
+  private $db;
 
-    public function __construct()
-    {
-        $connector = new Db_connector();
-        $this->db = $connector->GetDbConnection();
-    }
-
-  public function getOrCreateTypeId($type)
+  public function __construct ()
+  {
+    $connector = new Db_connector();
+    $this->db = $connector->GetDbConnection();
+  }
+    
+  /**
+   * Summary of getTypeId
+   * @param mixed $type
+   */
+  public function getTypeId ($type)
   {
     try {
-      // Recherche du type dans la base de données
-      $stmt = $this->db->prepare("SELECT * FROM type WHERE name = :name");
+      $stmt = $this->db->prepare("SELECT id FROM type WHERE name = :name");
       $stmt->bindParam(':name', $type);
       $stmt->execute();
       $typeBdd = $stmt->fetch(PDO::FETCH_ASSOC);
 
-      if (empty($typeBdd)) {
-        // Si le type n'existe pas, on l'ajoute
-        $stmt = $this->db->prepare("INSERT INTO type (name) VALUES (:name)");
-        $stmt->bindParam(':name', $type);
-        $stmt->execute();
-        return $this->db->lastInsertId(); // Retourne l'ID du nouveau type
-      } else {
-        // Si le type existe déjà, on retourne son ID
-        return $typeBdd['id'];
-      }
+      // Retourne l'ID si le type existe, sinon false
+      return $typeBdd ? $typeBdd['id'] : false;
     } catch (PDOException $e) {
-      return "Erreur lors de l'accès ou de l'ajout du type : " . $e->getMessage();
+      return "Erreur lors de la récupération du type : " . $e->getMessage();
     }
   }
 
-  public function getType(int $typeId){
+  /**
+   * Summary of createType
+   * @param mixed $type
+   * @return bool|string
+   */
+  public function createType ($type)
+  {
     try {
-      // Recherche du type dans la base de données
-      $stmt = $this->db->prepare("SELECT * FROM type WHERE id = :id");
-      $stmt->bindParam(':id', $typeId);
+      $stmt = $this->db->prepare("INSERT INTO type (name) VALUES (:name)");
+      $stmt->bindParam(':name', $type);
       $stmt->execute();
-      return $stmt->fetch(PDO::FETCH_ASSOC);
-    }catch (PDOException $e) {
-      return "Erreur lors de l'accès ou de la recherche du type : " . $e->getMessage();
+
+      return $this->db->lastInsertId(); // Retourne l'ID du nouveau type
+    } catch (PDOException $e) {
+      return "Erreur lors de l'ajout du type : " . $e->getMessage();
     }
+  }
+
+  /**
+   * Summary of getOrCreateTypeId
+   * @param mixed $type
+   * @return mixed
+   */
+  public function getOrCreateTypeId ($type)
+  {
+    // On tente de récupérer le type
+    $typeId = $this->getTypeId($type);
+
+    // Si le type n'existe pas, on le crée et retourne son ID
+    if (!$typeId) {
+      $typeId = $this->createType($type);
+    }
+
+    return $typeId;
   }
 }

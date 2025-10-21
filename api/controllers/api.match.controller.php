@@ -65,7 +65,8 @@ class ApiMatchController
       ];
 
     } catch (PDOException $e) {
-      return "Erreur lors de l'ajout de la créature : " . $e->getMessage();
+      error_log($e->getMessage());
+      return ['success' => false, 'message' => 'Une erreur est survenue lors de l\'ajout du match.'];
     }
   }
 
