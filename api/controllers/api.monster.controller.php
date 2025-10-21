@@ -18,14 +18,15 @@ class ApiMonsterController
   }
 
   /**
-   * Summary of getCreatures
+   * Retrieves a list of creatures from the database.
+   * If a userId is provided, only creatures created by that user are returned.
    * @param mixed $userId
    * @return array|array{message: string, success: bool}
    */
   public function getCreatures (?int $userId = null) : array
   {
     try {
-      // Récupération des créatures
+      // Fetch creatures from the database
       $sql = "SELECT * FROM creature";
       if (!is_null($userId)) {
         $sql .= " WHERE created_by = :user_id";
@@ -36,27 +37,28 @@ class ApiMonsterController
       }
       $stmt->execute();
 
-      return $stmt->fetchAll(PDO::FETCH_ASSOC); // Retourne toutes les créatures sous forme de tableau
+      // Returns all creatures as an associative array
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
       return ['success' => false,
-              'message'=> 'Erreur de connexion à la base de données :'. $e->getMessage()];
+              'message' => 'Erreur de connexion à la base de données :' . $e->getMessage()];
     }
   }
 
   /**
-   * Summary of addCreature
+   * Adds a new creature to the database.
    * @param array $datas
    * @return array{attack_score: mixed, creature_id: mixed, defense_score: mixed, description: mixed, heads: mixed, health_score: mixed, image: string, message: string, name: mixed, success: bool, type: mixed, user_id: mixed|array{message: string, success: bool}}
    */
   function addCreature (array $datas = []) : array
   {
     try {
-      // Vérification si la session est bien démarrée
+      // Verify if the session is started
       if (session_status() === PHP_SESSION_NONE) {
         session_start();
       }
 
-      // Determine user id: prefer provided data (from client) otherwise use session
+      // Determine the user ID: prefer data from the client (datas) or session if available
       $user_id = $datas['user_id'] ?? $_SESSION['user_id'] ?? null;
 
       if (is_null($user_id)) {
@@ -67,11 +69,13 @@ class ApiMonsterController
 
       $typeController = new APITypeController();
 
-      // Récupération ou création de l'ID du type
+      // Retrieve or create the type ID
       $type_id = $typeController->getOrCreateTypeId($infoCreature->type);
 
+      // Add the creature and get its ID
       $creatureID = $this->add($infoCreature, $type_id, $datas['heads'] ?? 1, $user_id);
 
+      // Generate an image for the creature based on its description
       $image = $this->getImage($creatureID, $infoCreature->description);
       $this->updateImage($creatureID, $image);
 
@@ -94,38 +98,40 @@ class ApiMonsterController
   }
 
   /**
-   * Summary of getInfoCreature
+   * Generates the creature's description using a prompt template and AI.
    * @param array $datas
    */
   private function getInfoCreature (array $datas = [])
   {
+    // Read the prompt template for generating the description
     $prompt = file_get_contents('C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\pollinations\monster.description.prompt');
 
     $prompt = str_replace('{{heads}}', $datas['heads'], $prompt);
     $prompt = str_replace('{{type}}', $datas['type'], $prompt);
 
+    // Call the AI to generate the description
     return Pollinations::requestIA($prompt);
   }
 
   /**
-   * Summary of getImage
+   * Retrieves an image for the creature using its description.
    * @param int $creature_id
    * @param string $description
    * @return string
    */
   protected function getImage (int $creature_id, string $description = "") : string
   {
+    // Define the path to save the image
     $destination = 'C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\images\creatures\\' . $creature_id . '.jpg';
     $image = Pollinations::requestIA($description, false);
-    //$image = file_get_contents(Pollinations::requestIA($description, false));
     file_put_contents($destination, $image);
 
-
+    // Return the path to the image
     return 'includes\images\creatures\\' . $creature_id . '.jpg';
   }
 
   /**
-   * Summary of updateImage
+   * Updates the image path of a creature in the database.
    * @param int $creature_id
    * @param string $image
    * @return void
@@ -138,9 +144,15 @@ class ApiMonsterController
     $stmt->execute();
   }
 
-
-protected function checkCreatureExists($infoCreature, int $type_id, int $heads, int $userId)
-{
+  /**
+   * Checks if a creature with the same characteristics already exists in the database.
+   * @param mixed $infoCreature
+   * @param int $type_id
+   * @param int $heads
+   * @param int $userId
+   */
+  protected function checkCreatureExists ($infoCreature, int $type_id, int $heads, int $userId)
+  {
     // Vérifie si une créature avec les mêmes caractéristiques existe déjà dans la base de données
     $stmt = $this->pdo->prepare("SELECT * FROM creature WHERE name = :name AND 
                                 description = :description AND type_id = :type_id AND 
@@ -157,52 +169,56 @@ protected function checkCreatureExists($infoCreature, int $type_id, int $heads, 
     $stmt->bindParam(':userId', $userId);
     $stmt->execute();
 
-    // Retourne la créature si elle existe, sinon null
+    // Return the creature if found, otherwise null
     return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+  }
 
   /**
-   * Summary of add
+   * Adds a new creature to the database.
    * @param mixed $infoCreature
    * @param int $type_id
    * @param int $heads
    * @param int $userId
    * @param bool $isHybrid
    */
-protected function add($infoCreature, int $type_id, int $heads, int $userId)
-{
-    // Vérifie si la créature existe déjà
+  protected function add ($infoCreature, int $type_id, int $heads, int $userId)
+  {
     $creatureBdd = $this->checkCreatureExists($infoCreature, $type_id, $heads, $userId);
 
-    // Si la créature n'existe pas, on l'ajoute
+    // If the creature doesn't exist, add it to the database
     if (empty($creatureBdd)) {
-        $sql = 'INSERT INTO creature (name, description, type_id, heads, 
+      $sql = 'INSERT INTO creature (name, description, type_id, heads, 
                                         health_score, attack_score, defense_score , created_by) 
                 VALUES (:name, :description, :type_id, :heads, :health_score, 
                         :attack_score, :defense_score, :userId)';
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':name', $infoCreature->nom);
-        $stmt->bindParam(':description', $infoCreature->description);
-        $stmt->bindParam(':type_id', $type_id);
-        $stmt->bindParam(':heads', $heads);
-        $stmt->bindParam(':health_score', $infoCreature->score->sante);
-        $stmt->bindParam(':attack_score', $infoCreature->score->attaque);
-        $stmt->bindParam(':defense_score', $infoCreature->score->defense);
-        $stmt->bindParam(':userId', $userId);
-        $stmt->execute();
+      $stmt = $this->pdo->prepare($sql);
+      $stmt->bindParam(':name', $infoCreature->nom);
+      $stmt->bindParam(':description', $infoCreature->description);
+      $stmt->bindParam(':type_id', $type_id);
+      $stmt->bindParam(':heads', $heads);
+      $stmt->bindParam(':health_score', $infoCreature->score->sante);
+      $stmt->bindParam(':attack_score', $infoCreature->score->attaque);
+      $stmt->bindParam(':defense_score', $infoCreature->score->defense);
+      $stmt->bindParam(':userId', $userId);
+      $stmt->execute();
 
-        return $this->pdo->lastInsertId(); // Retourne l'ID de la nouvelle créature
+      return $this->pdo->lastInsertId(); // Retourne l'ID de la nouvelle créature
     }
 
-    // Si la créature existe déjà, retourne son ID
     return $creatureBdd['id'];
-}
+  }
 
+  /**
+   * Retrieves a creature's data from the database by its ID.
+   *
+   * @param int $id The ID of the creature to retrieve.
+   * @return mixed The creature's data as an associative array, or null if not found.
+   */
   function getCreature (int $id)
   {
     try {
-      // Récupération des créatures
+      // Retrieve creature by ID
       $sql = "SELECT * FROM creature WHERE id = :id";
       $stmt = $this->pdo->prepare($sql);
       $stmt->bindParam(':id', $id);
@@ -210,12 +226,17 @@ protected function add($infoCreature, int $type_id, int $heads, int $userId)
 
       return $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-      //echo "Erreur de connexion à la base de données : " . $e->getMessage();
 
       return null;
     }
   }
 
+  /**
+   * Updates the creature to mark it as a hybrid (fusion).
+   *
+   * @param int $creature_id The ID of the creature to update.
+   * @return void
+   */
   protected function updateHybrid (int $creature_id)
   {
     $stmt = $this->pdo->prepare("UPDATE creature SET is_fusion = 1 WHERE id = :id");
