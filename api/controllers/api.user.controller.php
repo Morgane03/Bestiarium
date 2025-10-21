@@ -54,7 +54,7 @@ class APIUserController
    * @param string $password
    * @return array{message: string, success: bool, user_id: string|array{message: string, success: bool}}
    */
-  public function loginUser (string $pseudo, string $password)
+  public function loginUser (string $pseudo, string $password) 
   {
     try {
       // Prepare the SQL query to fetch the user by pseudo.
@@ -75,6 +75,9 @@ class APIUserController
         return ['success' => true,
                 'message' => 'Utilisateur connecté avec succès.',
                 'user_id' => 'Votre user_id :' . $user['id']];
+      } else {
+        // Explicitly return on invalid credentials so all code paths return a value.
+        return ['success' => false, 'message' => 'Pseudo ou mot de passe incorrect.'];
       }
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Erreur lors de la connexion de l\'utilisateur.'];
