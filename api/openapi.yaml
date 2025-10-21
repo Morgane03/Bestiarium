@@ -355,4 +355,110 @@ paths:
                     type: integer
                     example: 103
                   name:
+  /battle/add:
+    post:
+      summary: Ajouter un match entre deux créatures
+      description: Crée un match entre deux créatures, effectue le combat et détermine le vainqueur.
+      tags:
+        - Batailles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - creature1
+                - creature2
+              properties:
+                creature1:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: integer
+                      example: 101
+                      description: ID de la première créature
+                creature2:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: integer
+                      example: 102
+                      description: ID de la deuxième créature
+      responses:
+        '200':
+          description: Match ajouté avec succès et combat effectué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Match ajouté avec succès"
+                  matchID:
+                    type: integer
+                    example: 2001
+                  winner_id:
+                    type: integer
+                    example: 101
+        '400':
+          description: Erreur dans la requête
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Champs manquants : creature1, creature2"
 
+  /battle/results:
+    get:
+      summary: Obtenir tous les résultats des matchs
+      description: Récupère tous les matchs effectués avec leurs résultats.
+      tags:
+        - Batailles
+      responses:
+        '200':
+          description: Liste des matchs et de leurs résultats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    matchID:
+                      type: integer
+                      example: 2001
+                    creature1_id:
+                      type: integer
+                      example: 101
+                    creature2_id:
+                      type: integer
+                      example: 102
+                    winner_id:
+                      type: integer
+                      example: 101
+                    date:
+                      type: string
+                      format: date-time
+                      example: "2025-10-21T12:34:56Z"
+        '404':
+          description: Aucun match trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Aucun match trouvé"
