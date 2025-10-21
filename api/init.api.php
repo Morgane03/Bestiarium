@@ -2,11 +2,13 @@
 require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\controllers\api.user.controller.php';
 require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\controllers\api.monster.controller.php';
 require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\controllers\api.match.controller.php';
+require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\controllers\api.hybrid.controller.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $userController = new APIUserController();
 $monsterController = new ApiMonsterController();
 $matchController = new ApiMatchController();
+$hybridController = new ApiHybridController();
 
 if (!empty($_GET['action'])) {
   // Nettoie et découpe l'action en segments
@@ -65,13 +67,24 @@ if (!empty($_GET['action'])) {
           if ($method === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
 
-            $response = $monsterController->addCreature(['heads' => $input['heads'], 'type' => $input['type'], 'user_id' => $input['user_id']]);
+            $response = $monsterController->addCreature(['heads' => $input['heads'], 'type' => $input['type'],
+                                                         'user_id' => $input['user_id']]);
             echo json_encode($response);
           } else {
             echo json_encode(['error' => 'Vous devez utiliser la methode POST']);
           }
           break;
         case 'createHybrid':
+          if ($method === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            $response = $hybridController->addHybrid(['creature1' => $input['creature1_id'],
+                                                      'creature2' => $input['creature2_id'],
+                                                      'user_id' => $input['user_id']]);
+            echo json_encode($response);
+          }else{
+            echo json_encode(['error' => 'Vous devez utiliser la methode POST']);
+          }
           break;
         case 'showinfo':
           break;
