@@ -16,10 +16,15 @@ class ApiMatchController
     $this->pdo = $db->GetDbConnection();
   }
 
+  /**
+   * GetInfoMatch generates the match details prompt for the AI.
+   * @param array $datas
+   */
   private function getInfoMatch (array $datas = [])
   {
     $prompt = file_get_contents('../includes/pollinations/monster.battle.prompt');
 
+    // Replace placeholders with actual creature data
     $prompt = str_replace('{{creature1_id}}', $datas['creature1']['id'], $prompt);
     $prompt = str_replace('{{healthScore1}}', $datas['creature1']['health_score'], $prompt);
     $prompt = str_replace('{{attackScore1}}', $datas['creature1']['attack_score'], $prompt);
@@ -33,23 +38,30 @@ class ApiMatchController
     return Pollinations::requestIA($prompt);
   }
 
+  /**
+   * AddMatch handles adding a new match between two creatures.
+   * @param array $datas
+   * @return array{matchID: bool|string, message: string, success: bool, winner_id: int|array{message: string, success: bool}}
+   */
   function addMatch (array $datas = []) : array
   {
     try {
+      // Create an instance of ApiMonsterController to fetch creature data
       $monsterController = new ApiMonsterController();
 
       if (!isset($datas['creature1']) || !isset($datas['creature2'])) {
         return ['success' => false, 'message' => 'Les informations sur les créatures sont manquantes.'];
       }
 
-      // Récupérer les informations complètes sur les créatures avec les ID fournis
+      // Retrieve full information of both creatures by their IDs
       $creature1 = $monsterController->getCreature($datas['creature1']['id']);
       $creature2 = $monsterController->getCreature($datas['creature2']['id']);
 
       if (!$creature1 || !$creature2) {
         return ['success' => false, 'message' => 'Une des créatures spécifiées n\'existe pas.'];
       }
-      // Utilisation de ces informations dans la suite
+
+      // Get match information from AI
       $infoMatch = $this->getInfoMatch([
         'creature1' => $creature1,
         'creature2' => $creature2
@@ -70,6 +82,13 @@ class ApiMatchController
     }
   }
 
+  /**
+   * add the match to the database.
+   * @param mixed $infoMatch
+   * @param int $creature1_id
+   * @param int $creature2_id
+   * @return bool|string
+   */
   protected function add ($infoMatch, int $creature1_id, int $creature2_id)
   {
 
@@ -85,6 +104,10 @@ class ApiMatchController
     return $this->pdo->lastInsertId();
   }
 
+  /**
+   * showAllMatches retrieves all the matches stored in the database.
+   * @return array|array{message: string, success: bool}
+   */
   public function showAllMatches () : array
   {
     try {
