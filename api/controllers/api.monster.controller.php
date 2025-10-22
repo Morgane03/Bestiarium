@@ -58,10 +58,9 @@ class ApiMonsterController
         session_start();
       }
 
-      // Determine the user ID: prefer data from the client (datas) or session if available
-      $user_id = $datas['user_id'] ?? $_SESSION['user_id'] ?? null;
-
-      if (is_null($user_id)) {
+      if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+      } else {
         return ['success' => false, 'message' => 'Utilisateur non connecté'];
       }
 

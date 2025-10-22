@@ -67,8 +67,7 @@ if (!empty($_GET['action'])) {
           if ($method === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
 
-            $response = $monsterController->addCreature(['heads' => $input['heads'], 'type' => $input['type'],
-                                                         'user_id' => $input['user_id']]);
+            $response = $monsterController->addCreature(['heads' => $input['heads'], 'type' => $input['type']]);
             echo json_encode($response);
           } else {
             echo json_encode(['error' => 'Vous devez utiliser la methode POST']);
@@ -79,8 +78,7 @@ if (!empty($_GET['action'])) {
             $input = json_decode(file_get_contents('php://input'), true);
 
             $response = $hybridController->addHybrid(['creature1' => $input['creature1_id'],
-                                                      'creature2' => $input['creature2_id'],
-                                                      'user_id' => $input['user_id']]);
+                                                      'creature2' => $input['creature2_id']]);
             echo json_encode($response);
           }else{
             echo json_encode(['error' => 'Vous devez utiliser la methode POST']);

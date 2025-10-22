@@ -40,7 +40,6 @@ class ApiHybridController extends ApiMonsterController
         $this->addSql($creature1['id'], $creature2['id'], $creatureID);
 
         // Get the user's creatures and the newly created hybrid creature
-        $creatures = $this->getCreatures($datas['user_id']);
         $creature = $this->getCreature($creatureID);
 
         return ['success'       => true,
@@ -55,7 +54,7 @@ class ApiHybridController extends ApiMonsterController
                 'attack_score'  => $creature['attack_score'],
                 'defense_score' => $creature['defense_score'],
                 'is_fusion'     => $creature['is_fusion'],
-                'user_id'       => $datas['user_id'],
+                'user_id'       => $_SESSION['user_id'],
         ];
       }
     } catch (PDOException $e) {

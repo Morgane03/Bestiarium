@@ -74,7 +74,7 @@ class APIUserController
 
         return ['success' => true,
                 'message' => 'Utilisateur connecté avec succès.',
-                'user_id' => 'Votre user_id :' . $user['id']];
+                'user_id' => $user['id']];
       } else {
         // Explicitly return on invalid credentials so all code paths return a value.
         return ['success' => false, 'message' => 'Pseudo ou mot de passe incorrect.'];
