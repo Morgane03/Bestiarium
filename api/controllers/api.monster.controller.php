@@ -64,7 +64,8 @@ class ApiMonsterController
       if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
       } else {
-        return ['success' => false, 'message' => 'Utilisateur non connecté'];
+        return ['success' => false,
+                'message' => 'Utilisateur non connecté'];
       }
 
       $infoCreature = $this->getInfoCreature($datas);
@@ -95,7 +96,8 @@ class ApiMonsterController
               'user_id'       => $user_id,
       ];
     } catch (PDOException $e) {
-      return ['success' => false, 'message' => 'Erreur lors de l\'ajout de la créature :' . $e->getMessage()];
+      return ['success' => false,
+              'message' => 'Erreur lors de l\'ajout de la créature :' . $e->getMessage()];
     }
   }
 
@@ -155,7 +157,6 @@ class ApiMonsterController
    */
   protected function checkCreatureExists ($infoCreature, int $type_id, int $heads, int $userId)
   {
-    // Vérifie si une créature avec les mêmes caractéristiques existe déjà dans la base de données
     $stmt = $this->pdo->prepare("SELECT * FROM creature WHERE name = :name AND 
                                 description = :description AND type_id = :type_id AND 
                                 heads = :heads AND health_score = :health_score AND 
@@ -205,7 +206,8 @@ class ApiMonsterController
       $stmt->bindParam(':userId', $userId);
       $stmt->execute();
 
-      return $this->pdo->lastInsertId(); // Retourne l'ID de la nouvelle créature
+      // Return the ID of the new creature
+      return $this->pdo->lastInsertId();
     }
 
     return $creatureBdd['id'];

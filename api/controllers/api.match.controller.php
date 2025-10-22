@@ -26,7 +26,7 @@ class ApiMatchController
   {
     $prompt = file_get_contents('../includes/pollinations/monster.battle.prompt');
 
-    // Remplacer les placeholders par les données des créatures
+    // Replace the placeholders with the creatures' data
     foreach (['creature1', 'creature2'] as $creaturePrefix) {
       $creature = $datas[$creaturePrefix];
       $prompt = str_replace("{{{$creaturePrefix}_id}}", $creature['id'], $prompt);
@@ -131,7 +131,7 @@ class ApiMatchController
   public function showAllMatches () : array
   {
     try {
-      // Récupération des combats
+      // Recovery of fights
       $sql = "SELECT * FROM battle";
       $stmt = $this->pdo->prepare($sql);
       $stmt->execute();
@@ -142,7 +142,7 @@ class ApiMatchController
                 'message' => 'Aucun match trouvé'];
       }
 
-      return $results; // Retourne touts les combats
+      return $results;
     } catch (PDOException $e) {
       echo "Erreur de connexion à la base de données : " . $e->getMessage();
 
