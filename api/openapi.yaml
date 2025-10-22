@@ -131,7 +131,6 @@ paths:
               required:
                 - type
                 - heads
-                - user_id
               properties:
                 type:
                   type: string
@@ -141,10 +140,6 @@ paths:
                   type: integer
                   example: 1
                   description: Nombre de têtes de la créature
-                user_id:
-                  type: integer
-                  example: 1
-                  description: ID de l'utilisateur ayant créé la créature
       responses:
         '200':
           description: Créature ajoutée avec succès
@@ -195,8 +190,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Champs manquants : type, heads, user_id"
-
+                    example: "Champs manquants : type, heads"
   /creature/showinfo:
     get:
       summary: Afficher les informations d'une créature
@@ -252,20 +246,12 @@ paths:
                   error:
                     type: string
                     example: "Créature non trouvée"
-
   /creature/showAllMyMonsters:
     get:
       summary: Afficher toutes les créatures d'un utilisateur
       description: Affiche toutes les créatures créées par un utilisateur.
       tags:
         - Créatures
-      parameters:
-        - name: user_id
-          in: query
-          required: true
-          schema:
-            type: integer
-            example: 1
       responses:
         '200':
           description: Liste des créatures de l'utilisateur
@@ -307,7 +293,6 @@ paths:
                   error:
                     type: string
                     example: "Aucune créature trouvée pour cet utilisateur"
-
   /creature/createHybrid:
     post:
       summary: Créer une créature hybride

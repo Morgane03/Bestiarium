@@ -98,7 +98,7 @@ if (!empty($_GET['action'])) {
           if($method === 'GET'){
             $input = json_decode(file_get_contents('php://input'), true);
 
-            $response = $monsterController->getCreatures($input['user_id']);
+            $response = $monsterController->getCreatures($_SESSION['user_id']);
             echo json_encode($response);
           }else{
             echo json_encode(['error' => 'Vous devez utiliser la methode GET']);
