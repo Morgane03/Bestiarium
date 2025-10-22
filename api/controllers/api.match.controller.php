@@ -4,6 +4,7 @@ require_once('../includes/pollinations/Pollinations.class.php');
 class ApiMatchController
 {
   private $pdo;
+  private $monsterController;
 
   public function __construct ()
   {
@@ -11,31 +12,55 @@ class ApiMatchController
       session_start();
     }
     $db = new Db_connector();
-
-    // Connexion à la base de donnée
     $this->pdo = $db->GetDbConnection();
+    $this->monsterController = new ApiMonsterController();
+  }
+
+  /**
+   * Retrieve match details and generate the AI prompt.
+   *
+   * @param array $datas
+   * @return string
+   */
+  private function generateMatchPrompt(array $datas): string
+  {
+    $prompt = file_get_contents('../includes/pollinations/monster.battle.prompt');
+
+    // Remplacer les placeholders par les données des créatures
+    foreach (['creature1', 'creature2'] as $creaturePrefix) {
+      $creature = $datas[$creaturePrefix];
+      $prompt = str_replace("{{{$creaturePrefix}_id}}", $creature['id'], $prompt);
+      $prompt = str_replace("{{healthScore{$creaturePrefix}}}", $creature['health_score'], $prompt);
+      $prompt = str_replace("{{attackScore{$creaturePrefix}}}", $creature['attack_score'], $prompt);
+      $prompt = str_replace("{{defenseScore{$creaturePrefix}}}", $creature['defense_score'], $prompt);
+    }
+
+    return $prompt;
   }
 
   /**
    * GetInfoMatch generates the match details prompt for the AI.
    * @param array $datas
    */
-  private function getInfoMatch (array $datas = [])
+  private function getInfoMatch (array $creature1, array $creature2)
   {
-    $prompt = file_get_contents('../includes/pollinations/monster.battle.prompt');
-
-    // Replace placeholders with actual creature data
-    $prompt = str_replace('{{creature1_id}}', $datas['creature1']['id'], $prompt);
-    $prompt = str_replace('{{healthScore1}}', $datas['creature1']['health_score'], $prompt);
-    $prompt = str_replace('{{attackScore1}}', $datas['creature1']['attack_score'], $prompt);
-    $prompt = str_replace('{{defenseScore1}}', $datas['creature1']['defense_score'], $prompt);
-
-    $prompt = str_replace('{{creature2_id}}', $datas['creature2']['id'], $prompt);
-    $prompt = str_replace('{{healthScore2}}', $datas['creature2']['health_score'], $prompt);
-    $prompt = str_replace('{{attackScore2}}', $datas['creature2']['attack_score'], $prompt);
-    $prompt = str_replace('{{defenseScore2}}', $datas['creature2']['defense_score'], $prompt);
+    $prompt = $this->generateMatchPrompt([
+      'creature1' => $creature1,
+      'creature2' => $creature2
+    ]);
 
     return Pollinations::requestIA($prompt);
+  }
+
+  /**
+   * Validate if creatures data is available.
+   *
+   * @param array $datas
+   * @return bool
+   */
+  private function validateCreatures(array $datas): bool
+  {
+    return isset($datas['creature1']) && isset($datas['creature2']);
   }
 
   /**
@@ -46,26 +71,21 @@ class ApiMatchController
   function addMatch (array $datas = []) : array
   {
     try {
-      // Create an instance of ApiMonsterController to fetch creature data
-      $monsterController = new ApiMonsterController();
 
-      if (!isset($datas['creature1']) || !isset($datas['creature2'])) {
+      if (!$this->validateCreatures($datas)) {
         return ['success' => false, 'message' => 'Les informations sur les créatures sont manquantes.'];
       }
 
       // Retrieve full information of both creatures by their IDs
-      $creature1 = $monsterController->getCreature($datas['creature1']['id']);
-      $creature2 = $monsterController->getCreature($datas['creature2']['id']);
+      $creature1 = $this->monsterController->getCreature($datas['creature1']['id']);
+      $creature2 = $this->monsterController->getCreature($datas['creature2']['id']);
 
       if (!$creature1 || !$creature2) {
         return ['success' => false, 'message' => 'Une des créatures spécifiées n\'existe pas.'];
       }
 
       // Get match information from AI
-      $infoMatch = $this->getInfoMatch([
-        'creature1' => $creature1,
-        'creature2' => $creature2
-      ]);
+      $infoMatch = $this->getInfoMatch($creature1, $creature2);
 
       $matchID = $this->add($infoMatch, $datas['creature1']['id'], $datas['creature2']['id']);
 
@@ -93,7 +113,7 @@ class ApiMatchController
   {
 
     $sql = 'INSERT INTO battle (creature1_id, creature2_id, winner_id) 
-                                            VALUES (:creature1_id, :creature2_id, :winner_id)';
+                   VALUES (:creature1_id, :creature2_id, :winner_id)';
 
     $stmt = $this->pdo->prepare($sql);
     $stmt->bindParam(':creature1_id', $creature1_id);
