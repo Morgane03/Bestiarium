@@ -26,7 +26,7 @@ class APITypeController
       $stmt->execute();
       $typeBdd = $stmt->fetch(PDO::FETCH_ASSOC);
 
-      // Retourne l'ID si le type existe, sinon false
+      // Return the ID if the type exists, otherwise false
       return $typeBdd ? $typeBdd['id'] : false;
     } catch (PDOException $e) {
       return "Erreur lors de la récupération du type : " . $e->getMessage();
@@ -45,7 +45,7 @@ class APITypeController
       $stmt->bindParam(':name', $type);
       $stmt->execute();
 
-      return $this->db->lastInsertId(); // Retourne l'ID du nouveau type
+      return $this->db->lastInsertId(); // Return the ID of the new type
     } catch (PDOException $e) {
       return "Erreur lors de l'ajout du type : " . $e->getMessage();
     }

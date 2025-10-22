@@ -25,7 +25,7 @@ class APIUserController
       // The user's password is hashed before being stored in the database.
       $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-      // Préparation de la requête
+      // Preparation of the request
       $stmt = $this->db->prepare("INSERT INTO users (pseudo, email, password) 
             VALUES (:pseudo, :email, :password)");
 
