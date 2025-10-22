@@ -28,9 +28,12 @@ class ApiMonsterController
     try {
       // Fetch creatures from the database
       $sql = "SELECT * FROM creature";
-      if (!is_null($userId)) {
-        $sql .= " WHERE created_by = :user_id";
+      if (is_null($userId)) {
+        return ['success' => false,
+                'message' => 'Utilisateur non connecté'];
       }
+      $sql .= " WHERE created_by = :user_id";
+
       $stmt = $this->pdo->prepare($sql);
       if (!is_null($userId)) {
         $stmt->bindParam(':user_id', $userId);
