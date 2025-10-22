@@ -60,6 +60,8 @@ class ApiHybridController extends ApiMonsterController
                 'user_id'       => $this->getUserId()
         ];
       }
+      
+      return ['success'=> false,'message'=> 'Une des créatures spécifiées n\'existe pas.'];
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Erreur lors de la creation de l\'hybride :' . $e->getMessage()];
     }
