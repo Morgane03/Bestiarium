@@ -52,7 +52,7 @@ class ApiHybridController extends ApiMonsterController
                 'image'         => $creature['image'],
                 'description'   => $creature['description'],
                 'heads'         => $creature['heads'],
-                'type'          => $creature['type_id'],
+                'type'          => $infoCreature->type,
                 'health_score'  => $creature['health_score'],
                 'attack_score'  => $creature['attack_score'],
                 'defense_score' => $creature['defense_score'],
