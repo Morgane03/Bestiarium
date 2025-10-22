@@ -11,6 +11,7 @@ class ApiMatchController
     if (session_status() === PHP_SESSION_NONE) {
       session_start();
     }
+
     $db = new Db_connector();
     $this->pdo = $db->GetDbConnection();
     $this->monsterController = new ApiMonsterController();
@@ -144,8 +145,6 @@ class ApiMatchController
 
       return $results;
     } catch (PDOException $e) {
-      echo "Erreur de connexion à la base de données : " . $e->getMessage();
-
       return ['success' => false,
               'message' => 'Erreur de connexion à la base de données : ' . $e->getMessage()];
     }

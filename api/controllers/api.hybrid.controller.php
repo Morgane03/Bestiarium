@@ -74,6 +74,7 @@ class ApiHybridController extends ApiMonsterController
     if (isset($_SESSION['user_id'])) {
       return $_SESSION['user_id'];
     }
+    
     return null;
   }
 

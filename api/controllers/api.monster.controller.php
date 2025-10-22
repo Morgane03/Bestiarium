@@ -28,16 +28,19 @@ class ApiMonsterController
     try {
       // Fetch creatures from the database
       $sql = "SELECT * FROM creature";
+
       if (is_null($userId)) {
         return ['success' => false,
                 'message' => 'Utilisateur non connecté'];
       }
+
       $sql .= " WHERE created_by = :user_id";
 
       $stmt = $this->pdo->prepare($sql);
       if (!is_null($userId)) {
         $stmt->bindParam(':user_id', $userId);
       }
+
       $stmt->execute();
 
       // Returns all creatures as an associative array
@@ -109,7 +112,6 @@ class ApiMonsterController
   {
     // Read the prompt template for generating the description
     $prompt = file_get_contents('C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\pollinations\monster.description.prompt');
-
     $prompt = str_replace('{{heads}}', $datas['heads'], $prompt);
     $prompt = str_replace('{{type}}', $datas['type'], $prompt);
 
@@ -224,6 +226,7 @@ class ApiMonsterController
     try {
       // Retrieve creature by ID
       $sql = "SELECT * FROM creature WHERE id = :id";
+
       $stmt = $this->pdo->prepare($sql);
       $stmt->bindParam(':id', $id);
       $stmt->execute();

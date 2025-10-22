@@ -42,7 +42,7 @@ class APIUserController
               'email'    => $email,
               'password' => $hashedPassword];
     } catch (PDOException $e) {
-      // Pour le développement, sinon en prod, log l'erreur proprement
+
       return ['success' => false, 'message' => 'Erreur lors de l\'ajout de l\'utilisateur.'];
     }
   }
@@ -54,7 +54,7 @@ class APIUserController
    * @param string $password
    * @return array{message: string, success: bool, user_id: string|array{message: string, success: bool}}
    */
-  public function loginUser (string $pseudo, string $password) 
+  public function loginUser (string $pseudo, string $password)
   {
     try {
       // Prepare the SQL query to fetch the user by pseudo.
