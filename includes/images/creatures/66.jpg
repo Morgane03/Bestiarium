@@ -1,0 +1,2 @@
+Pollinations API responded with HTTP code 502 — response: 502 Bad Gateway
+Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared

@@ -16,6 +16,10 @@ class ApiHybridController extends ApiMonsterController
    */
   function addHybrid (array $datas = [])
   {
+    if (!isset($datas['creature1']) || !isset($datas['creature2'])) {
+      return ['success' => false, 'message' => 'Les créatures doivent être spécifiées.'];
+    }
+
     try {
 
       $creature1 = $this->getCreature($datas['creature1']);
@@ -29,7 +33,6 @@ class ApiHybridController extends ApiMonsterController
 
         // Get or create the type ID
         $type_id = $typeController->getOrCreateTypeId($infoCreature->type);
-
         $creatureID = $this->add($infoCreature, $type_id, (int)$infoCreature->tete, true);
         $this->updateHybrid($creatureID);
 
@@ -54,12 +57,22 @@ class ApiHybridController extends ApiMonsterController
                 'attack_score'  => $creature['attack_score'],
                 'defense_score' => $creature['defense_score'],
                 'is_fusion'     => $creature['is_fusion'],
-                'user_id'       => $_SESSION['user_id'],
+                'user_id'       => $this->getUserId()
         ];
       }
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Erreur lors de la creation de l\'hybride :' . $e->getMessage()];
     }
+  }
+
+  /**
+   * Retrieves the ID of the currently logged in user.
+   */
+  private function getUserId (){
+    if (isset($_SESSION['user_id'])) {
+      return $_SESSION['user_id'];
+    }
+    return null;
   }
 
   /**
