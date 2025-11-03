@@ -1,0 +1,269 @@
+{
+	"info": {
+		"_postman_id": "757fa7b6-265f-4297-9c94-37ad0e9b9e44",
+		"name": "Bestiarium",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49164795",
+		"_collection_link": "https://morgane-voisin04-5028157.postman.co/workspace/Morgane's-Workspace~1a8d0a98-ecb0-4211-8542-c1f70941bed8/collection/49164795-757fa7b6-265f-4297-9c94-37ad0e9b9e44?action=share&source=collection_link&creator=49164795"
+	},
+	"item": [
+		{
+			"name": "creature",
+			"item": [
+				{
+					"name": "Create Hybrid",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"creature1_id\": 40,\r\n    \"creature2_id\": 42\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://bestiarium/api/creature/createHybrid",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"creature",
+								"createHybrid"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Creature",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"heads\": 2,\r\n    \"type\": \"dragon\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://bestiarium/api/creature/add",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"creature",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show info of a creature",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"creature_id\": 17\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://bestiarium/api/creature/showinfo",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"creature",
+								"showinfo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show All My Monsters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://bestiarium/api/creature/showAllMyMonsters",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"creature",
+								"showAllMyMonsters"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pseudo\": \"TestApi_entier\",\r\n    \"password\": \"Test_test\",\r\n    \"email\": \"Test_api.entier@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://bestiarium/api/user/register",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pseudo\": \"Test_api\",\r\n    \"password\": \"Test_test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://bestiarium/api/user/login",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://bestiarium/api/user/logout",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "battle",
+			"item": [
+				{
+					"name": "Add battle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"creature1\": {\"id\": 30},\r\n    \"creature2\": {\"id\": 18}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://bestiarium/api/battle/add",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"battle",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://bestiarium/api/battle/results",
+							"protocol": "http",
+							"host": [
+								"bestiarium"
+							],
+							"path": [
+								"api",
+								"battle",
+								"results"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
