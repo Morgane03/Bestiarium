@@ -66,8 +66,6 @@ switch ($url[0] ?? 'home') {
   case 'addCreature':
       // Ensure session is started so we can attach the current user's id to the API request
       $response = ApiController::requestApi('creature/add');
-      var_dump($response);
-      die();
       break;
   case 'showUserPage':
     if (session_status() === PHP_SESSION_NONE) {
