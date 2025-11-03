@@ -7,7 +7,6 @@ Avant de commencer, assurez-vous que votre environnement de développement poss�
 - **PHP 7.4+** : L'API est écrite en PHP natif, assurez-vous que PHP est installé et à jour sur votre machine.
 - **SQLite** : La base de données utilisée est SQLite, qui ne nécessite pas de serveur de base de données externe.
 - **Serveur Web** : Un serveur comme Apache ou Nginx avec PHP activé est nécessaire pour exécuter l'API. Vous pouvez aussi utiliser le serveur interne de PHP pour tester localement.
-- **Composer** : Utilisé pour gérer les dépendances PHP, si nécessaire.
 
 ## Installation
 
@@ -18,16 +17,8 @@ Clonez le dépôt contenant le code de l'API :
 git clone https://github.com/Morgane03/Bestiarium.git
 cd Bestiarium
 ```
-
-### 2 Installer les dépendances PHP (si applicable)
-Si vous utilisez des dépendances externes, vous pouvez installer Composer et les gérer avec la commande suivante :
-
-```bash
-composer install
-```
-
 ### La base de données SQLite
-L'API utilise SQLite comme base de données. Créez le fichier de base de données SQLite dans le répertoire database/ si ce n'est pas déjà fait :
+L'API utilise SQLite comme base de données.
 
 ### a. Installation de SQLite
 Si vous ne l'avez pas encore fait, vous devrez installer SQLite. Voici comment procéder en fonction de votre système d'exploitation.
@@ -46,7 +37,8 @@ Sur Windows
 
 Vous pouvez télécharger SQLite directement depuis le site officiel. Téléchargez la version précompilée de SQLite pour Windows (le fichier .zip). Décompressez-le et ajoutez le dossier contenant sqlite3.exe à votre variable d'environnement PATH.
 
-### Configurer la base de donnée    
+### Configurer la base de donnée   
+Créez le fichier de base de données SQLite dans le répertoire database/ si ce n'est pas déjà fait : 
 ```bash
 touch includes/database/Bestiarium.db
 ```
