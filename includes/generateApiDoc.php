@@ -1,0 +1,480 @@
+<?php
+// Chemin vers l'image que vous voulez convertir
+$imagePath = 'images/diagrammes/DiagrammeMerise.png';
+
+// Vérifier si l'image existe
+if (!file_exists($imagePath)) {
+    die('Le fichier image n\'existe pas à l\'emplacement spécifié');
+}
+
+// Lire le contenu de l'image en binaire
+$imageData = file_get_contents($imagePath);
+
+// Convertir l'image en base64
+$base64Image = base64_encode($imageData);
+
+// Créer la documentation OpenAPI avec l'image en base64
+$openApiDocumentation = <<<YAML
+openapi: 3.0.0
+info:
+  title: API Bestinarium
+  description: |
+    Documentation de l'API.
+    Diagramme UML et diagramme de table :
+    ![Diagramme UML](data:image/png;base64,$base64Image)
+  version: 1.0.0
+servers:
+  - url: http://bestinarium/api
+paths:
+  /user/register:
+    post:
+      summary: Créer un nouvel utilisateur
+      description: Inscrit un nouvel utilisateur dans la base de données.
+      tags:
+        - Utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pseudo
+                - email
+                - password
+              properties:
+                pseudo:
+                  type: string
+                  example: "Jean123"
+                  description: Nom d'utilisateur unique
+                email:
+                  type: string
+                  example: "jean@example.com"
+                  description: Adresse email valide
+                password:
+                  type: string
+                  example: "MotDePasseSecret"
+                  description: Mot de passe sécurisé
+      responses:
+        '200':
+          description: Succès de l'inscription
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Utilisateur créé avec succès"
+        '400':
+          description: Erreur de validation
+  /user/login:
+    post:
+      summary: Connexion d'un utilisateur
+      description: Permet à un utilisateur de se connecter avec ses identifiants.
+      tags:
+        - Utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pseudo
+                - password
+              properties:
+                pseudo:
+                  type: string
+                  example: "Jean123"
+                  description: Nom d'utilisateur
+                password:
+                  type: string
+                  example: "MotDePasseSecret"
+                  description: Mot de passe sécurisé
+      responses:
+        '200':
+          description: Succès de la connexion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Utilisateur connecté avec succès"
+        '400':
+          description: Erreur de validation des champs
+        '401':
+          description: Erreur lors de la connexion de l'utilisateur.
+  /user/logout:
+    post:
+      summary: Déconnexion d'un utilisateur
+      description: Permet à un utilisateur de se déconnecter.
+      tags:
+        - Utilisateur
+      responses:
+        '200':
+          description: Succès de la déconnexion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Utilisateur déconnecté avec succès"
+        '400':
+          description: Erreur de déconnexion, utilisateur non connecté
+
+  /creature/add:
+    post:
+      summary: Ajouter une nouvelle créature
+      description: Ajoute une créature dans la base de données, avec les informations spécifiées.
+      tags:
+        - Créatures
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - heads
+              properties:
+                type:
+                  type: string
+                  example: "Dragon"
+                  description: Type de créature (e.g., Dragon, Licorne)
+                heads:
+                  type: integer
+                  example: 1
+                  description: Nombre de têtes de la créature
+      responses:
+        '200':
+          description: Créature ajoutée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Créature ajoutée avec succès"
+                  creature_id:
+                    type: integer
+                    example: 101
+                  name:
+                    type: string
+                    example: "Dragon des Cieux"
+                  image:
+                    type: string
+                    example: "/images/creatures/101.jpg"
+                  description:
+                    type: string
+                    example: "Un dragon majestueux avec des écailles d'argent."
+                  type:
+                    type: string
+                    example: "Dragon"
+                  heads:
+                    type: integer
+                    example: 1
+                  health_score:
+                    type: integer
+                    example: 100
+                  attack_score:
+                    type: integer
+                    example: 80
+                  defense_score:
+                    type: integer
+                    example: 60
+        '400':
+          description: Erreur dans la requête
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Champs manquants : type, heads"
+  /creature/showinfo:
+    get:
+      summary: Afficher les informations d'une créature
+      description: Affiche les informations détaillées d'une créature spécifique.
+      tags:
+        - Créatures
+      parameters:
+        - name: creature_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Informations de la créature récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  creature_id:
+                    type: integer
+                    example: 101
+                  name:
+                    type: string
+                    example: "Dragon des Cieux"
+                  description:
+                    type: string
+                    example: "Un dragon majestueux avec des écailles d'argent."
+                  type:
+                    type: string
+                    example: "Dragon"
+                  heads:
+                    type: integer
+                    example: 1
+                  health_score:
+                    type: integer
+                    example: 100
+                  attack_score:
+                    type: integer
+                    example: 80
+                  defense_score:
+                    type: integer
+                    example: 60
+        '404':
+          description: Créature non trouvée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Créature non trouvée"
+  /creature/showAllMyMonsters:
+    get:
+      summary: Afficher toutes les créatures d'un utilisateur
+      description: Affiche toutes les créatures créées par un utilisateur.
+      tags:
+        - Créatures
+      responses:
+        '200':
+          description: Liste des créatures de l'utilisateur
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    creature_id:
+                      type: integer
+                      example: 101
+                    name:
+                      type: string
+                      example: "Dragon des Cieux"
+                    type:
+                      type: string
+                      example: "Dragon"
+                    heads:
+                      type: integer
+                      example: 1
+                    health_score:
+                      type: integer
+                      example: 100
+                    attack_score:
+                      type: integer
+                      example: 80
+                    defense_score:
+                      type: integer
+                      example: 60
+        '404':
+          description: Aucun monstre trouvé pour l'utilisateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Aucune créature trouvée pour cet utilisateur"
+  /creature/createHybrid:
+    post:
+      summary: Créer une créature hybride
+      description: Crée une nouvelle créature hybride à partir de deux créatures existantes.
+      tags:
+        - Créatures
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - creature1_id
+                - creature2_id
+                - user_id
+              properties:
+                creature1_id:
+                  type: integer
+                  example: 101
+                  description: ID de la première créature
+                creature2_id:
+                  type: integer
+                  example: 102
+                  description: ID de la deuxième créature
+                user_id:
+                  type: integer
+                  example: 1
+                  description: ID de l'utilisateur ayant créé l'hybride
+      responses:
+        '200':
+          description: Hybride créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Hybride créé avec succès"
+                  creature_id:
+                    type: integer
+                    example: 103
+                  name:
+  /battle/add:
+    post:
+      summary: Ajouter un match entre deux créatures
+      description: Crée un match entre deux créatures, effectue le combat et détermine le vainqueur.
+      tags:
+        - Batailles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - creature1
+                - creature2
+              properties:
+                creature1:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: integer
+                      example: 101
+                      description: ID de la première créature
+                creature2:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: integer
+                      example: 102
+                      description: ID de la deuxième créature
+      responses:
+        '200':
+          description: Match ajouté avec succès et combat effectué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Match ajouté avec succès"
+                  matchID:
+                    type: integer
+                    example: 2001
+                  winner_id:
+                    type: integer
+                    example: 101
+        '400':
+          description: Erreur dans la requête
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Champs manquants : creature1, creature2"
+
+  /battle/results:
+    get:
+      summary: Obtenir tous les résultats des matchs
+      description: Récupère tous les matchs effectués avec leurs résultats.
+      tags:
+        - Batailles
+      responses:
+        '200':
+          description: Liste des matchs et de leurs résultats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    matchID:
+                      type: integer
+                      example: 2001
+                    creature1_id:
+                      type: integer
+                      example: 101
+                    creature2_id:
+                      type: integer
+                      example: 102
+                    winner_id:
+                      type: integer
+                      example: 101
+                    date:
+                      type: string
+                      format: date-time
+                      example: "2025-10-21T12:34:56Z"
+        '404':
+          description: Aucun match trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Aucun match trouvé"
+YAML;
+
+// Spécifier le chemin du fichier de sortie YAML
+$outputFilePath = 'C:\wamp64\www\MyDigitalSchool\Bestiarium\api\openapi.yaml';
+
+// Écrire la documentation OpenAPI dans le fichier
+file_put_contents($outputFilePath, $openApiDocumentation);
+
+// Afficher un message de confirmation
+echo "Le fichier OpenAPI a été généré avec succès à l'emplacement : $outputFilePath";
+?>
