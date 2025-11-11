@@ -17,7 +17,7 @@ Clonez le dépôt contenant le code de l'API :
 git clone https://github.com/Morgane03/Bestiarium.git
 cd Bestiarium
 ```
-### La base de données SQLite
+### 2. La base de données SQLite
 L'API utilise SQLite comme base de données.
 
 ### a. Installation de SQLite
@@ -42,7 +42,16 @@ Créez le fichier de base de données SQLite dans le répertoire database/ si ce
 ```bash
 touch includes/database/Bestiarium.db
 ```
-Aucune configuration supplémentaire n'est nécessaire pour SQLite. Vous pouvez utiliser des scripts ou des migrations pour peupler la base de données si nécessaire.
+
+### 3. Initialiser et peupler la base de données
+Une fois le fichier créé, exécutez les scripts d’initialisation et de peuplement pour configurer la base :
+```bash
+php includes/database/init_db.php
+php includes/database/seed_db.php
+```
+init_db.php : crée les tables nécessaires (utilisateurs, créatures, matchs, etc.)
+
+seed_db.php : insère des données de test dans la base pour permettre un usage immédiat de l’API.
 
 ### 4. Configuration du fichier config.php
 Configurez les paramètres de l'API, notamment le chemin vers la base de données SQLite et l'API OpenAI Polynesia. Exemple :

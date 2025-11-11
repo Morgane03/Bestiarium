@@ -3,12 +3,11 @@ require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\database\Db.conn
 
 class APITypeController
 {
-  private $db;
+  protected PDO $pdo;
 
-  public function __construct ()
+  public function __construct()
   {
-    $connector = new Db_connector();
-    $this->db = $connector->GetDbConnection();
+    $this->pdo = Db_connector::getConnection();
   }
 
   /**
@@ -21,9 +20,10 @@ class APITypeController
   public function getTypeId ($type)
   {
     try {
-      $stmt = $this->db->prepare("SELECT id FROM type WHERE name = :name");
+      $stmt = $this->pdo->prepare("SELECT id FROM type WHERE name = :name");
       $stmt->bindParam(':name', $type);
       $stmt->execute();
+
       $typeBdd = $stmt->fetch(PDO::FETCH_ASSOC);
 
       // Return the ID if the type exists, otherwise false
@@ -41,11 +41,11 @@ class APITypeController
   public function createType ($type)
   {
     try {
-      $stmt = $this->db->prepare("INSERT INTO type (name) VALUES (:name)");
+      $stmt = $this->pdo->prepare("INSERT INTO type (name) VALUES (:name)");
       $stmt->bindParam(':name', $type);
       $stmt->execute();
 
-      return $this->db->lastInsertId(); // Return the ID of the new type
+      return $this->pdo->lastInsertId(); // Return the ID of the new type
     } catch (PDOException $e) {
       return "Erreur lors de l'ajout du type : " . $e->getMessage();
     }

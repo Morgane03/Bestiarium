@@ -7,6 +7,7 @@ Bienvenue dans le guide utilisateur de Bestinarium, l'outil ultime pour la gesti
 - [Documentation Utilisateur - Bestinarium](#documentation-utilisateur---bestinarium)
   - [Introduction](#introduction)
   - [Table des matières](#table-des-matières)
+  - [0. Installation de la base de données](#0-Installation de la base de données)
   - [1. Créer un compte utilisateur](#1-créer-un-compte-utilisateur)
   - [2. Se connecter à votre compte](#2-se-connecter-à-votre-compte)
   - [3. Gérer vos créatures](#3-gérer-vos-créatures)
@@ -18,6 +19,28 @@ Bienvenue dans le guide utilisateur de Bestinarium, l'outil ultime pour la gesti
   - [Notes supplémentaires](#notes-supplémentaires)
 
 ---
+
+## 0.Installation de la base de données
+Avant de pouvoir utiliser Bestinarium, il est nécessaire d’installer et d’initialiser la base de données.
+
+Étapes d’installation :
+Assurez-vous que votre environnement PHP est configuré correctement et que vous avez accès à votre serveur local (ex : localhost).
+Depuis la racine du projet, exécutez les commandes suivantes dans votre terminal :
+
+php includes/database/init_db.php
+
+php includes/database/seed_db.php
+
+Détails :
+
+init_db.php : crée la structure de la base de données (tables, colonnes, relations, etc.).
+
+seed_db.php : insère des données initiales pour permettre de tester immédiatement l’application.
+
+Une fois ces scripts exécutés avec succès, votre base de données sera prête à l’emploi.
+
+Exemple de message attendu :
+Base de données initialisée et peuplée avec succès.
 
 ## 1. Créer un compte utilisateur
 Pour créer un compte utilisateur, suivez ces étapes :

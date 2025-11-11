@@ -3,7 +3,7 @@ require_once('../includes/pollinations/Pollinations.class.php');
 
 class ApiMatchController
 {
-  private $pdo;
+  protected PDO $pdo;
   private $monsterController;
 
   public function __construct ()
@@ -12,8 +12,7 @@ class ApiMatchController
       session_start();
     }
 
-    $db = new Db_connector();
-    $this->pdo = $db->GetDbConnection();
+    $this->pdo = Db_connector::getConnection();
     $this->monsterController = new ApiMonsterController();
   }
 

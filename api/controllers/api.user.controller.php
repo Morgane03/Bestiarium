@@ -3,13 +3,13 @@ require_once 'C:\wamp64\www\MyDigitalSchool\Bestiarium\includes\database\Db.conn
 
 class APIUserController
 {
-  private $db;
+  private PDO $db;
 
-  public function __construct ()
-  {
-    $connector = new Db_connector();
-    $this->db = $connector->GetDbConnection();
-    $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  public function __construct() {
+    $this->db = Db_connector::getConnection();
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+    }
   }
 
   /**
@@ -22,25 +22,24 @@ class APIUserController
   public function addUser (string $pseudo, string $email, string $password) : array
   {
     try {
-      // The user's password is hashed before being stored in the database.
       $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-      // Preparation of the request
-      $stmt = $this->db->prepare("INSERT INTO users (pseudo, email, password) 
-            VALUES (:pseudo, :email, :password)");
+      $stmt = $this->db->prepare("
+                INSERT INTO users (pseudo, email, password) 
+                VALUES (:pseudo, :email, :password)
+            ");
+      $stmt->execute([
+        ':pseudo' => $pseudo,
+        ':email' => $email,
+        ':password' => $hashedPassword
+      ]);
 
-      // Bind the prepared query's parameters to the values passed to the function.
-      $stmt->bindParam(':pseudo', $pseudo);
-      $stmt->bindParam(':email', $email);
-      $stmt->bindParam(':password', $hashedPassword);
-      $stmt->execute();
-
-      // If the insertion is successful, we return an array indicating the user was added successfully.
-      return ['success'  => true,
-              'message'  => 'Utilisateur ajouté avec succès.',
-              'pseudo'   => $pseudo,
-              'email'    => $email,
-              'password' => $hashedPassword];
+      return [
+        'success' => true,
+        'message' => 'Utilisateur ajouté avec succès.',
+        'pseudo' => $pseudo,
+        'email' => $email
+      ];
     } catch (PDOException $e) {
 
       return ['success' => false, 'message' => 'Erreur lors de l\'ajout de l\'utilisateur.'];

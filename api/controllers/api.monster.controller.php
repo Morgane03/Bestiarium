@@ -4,17 +4,15 @@ require_once('../api/controllers/api.type.controller.php');
 
 class ApiMonsterController
 {
-  protected $pdo;
+  protected PDO $pdo;
 
-  public function __construct ()
+  public function __construct()
   {
     if (session_status() === PHP_SESSION_NONE) {
       session_start();
     }
-    $db = new Db_connector();
 
-    // Connexion à la base de donnée
-    $this->pdo = $db->GetDbConnection();
+    $this->pdo = Db_connector::getConnection();
   }
 
   /**
@@ -26,21 +24,13 @@ class ApiMonsterController
   public function getCreatures (?int $userId = null) : array
   {
     try {
-      // Fetch creatures from the database
-      $sql = "SELECT * FROM creature";
-
       if (is_null($userId)) {
-        return ['success' => false,
-                'message' => 'Utilisateur non connecté'];
+        return ['success' => false, 'message' => 'Utilisateur non connecté'];
       }
 
-      $sql .= " WHERE created_by = :user_id";
-
+      $sql = "SELECT * FROM creature WHERE created_by = :user_id";
       $stmt = $this->pdo->prepare($sql);
-      if (!is_null($userId)) {
-        $stmt->bindParam(':user_id', $userId);
-      }
-
+      $stmt->bindParam(':user_id', $userId);
       $stmt->execute();
 
       // Returns all creatures as an associative array
@@ -59,44 +49,38 @@ class ApiMonsterController
   function addCreature (array $datas = []) : array
   {
     try {
-      // Verify if the session is started
       if (session_status() === PHP_SESSION_NONE) {
         session_start();
       }
 
-      if (isset($_SESSION['user_id'])) {
-        $user_id = $_SESSION['user_id'];
-      } else {
-        return ['success' => false,
-                'message' => 'Utilisateur non connecté'];
+      if (!isset($_SESSION['user_id'])) {
+        return ['success' => false, 'message' => 'Utilisateur non connecté'];
       }
 
+      $user_id = $_SESSION['user_id'];
       $infoCreature = $this->getInfoCreature($datas);
 
       $typeController = new APITypeController();
-
-      // Retrieve or create the type ID
       $type_id = $typeController->getOrCreateTypeId($infoCreature->type);
 
-      // Add the creature and get its ID
       $creatureID = $this->add($infoCreature, $type_id, $datas['heads'] ?? 1, $user_id);
 
-      // Generate an image for the creature based on its description
       $image = $this->getImage($creatureID, $infoCreature->description);
       $this->updateImage($creatureID, $image);
 
-      return ['success'       => true,
-              'message'       => 'Creature ajoutée avec succes',
-              'creature_id'   => $creatureID,
-              'name'          => $infoCreature->nom,
-              'image'         => $image,
-              'description'   => $infoCreature->description,
-              'heads'         => $datas['heads'],
-              'type'          => $infoCreature->type,
-              'health_score'  => $infoCreature->score->sante,
-              'attack_score'  => $infoCreature->score->attaque,
-              'defense_score' => $infoCreature->score->defense,
-              'user_id'       => $user_id,
+      return [
+        'success' => true,
+        'message' => 'Créature ajoutée avec succès',
+        'creature_id' => $creatureID,
+        'name' => $infoCreature->nom,
+        'image' => $image,
+        'description' => $infoCreature->description,
+        'heads' => $datas['heads'] ?? 1,
+        'type' => $infoCreature->type,
+        'health_score' => $infoCreature->score->sante,
+        'attack_score' => $infoCreature->score->attaque,
+        'defense_score' => $infoCreature->score->defense,
+        'user_id' => $user_id,
       ];
     } catch (PDOException $e) {
       return ['success' => false,
